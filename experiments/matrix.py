@@ -75,7 +75,6 @@ def horizontal_striped_matrix(n, stripe_height = 4, stripe_gap = 16) -> sparse.c
     return sparse.csr_matrix((data, (rows, cols)), shape=(n, n))
 
 
-
 def upper_triangular_matrix(n) -> sparse.csr_matrix:
     rows = []
     cols = []
@@ -102,6 +101,24 @@ def lower_triangular_matrix(n) -> sparse.csr_matrix:
             data.append(1.0)
 
     return sparse.csr_matrix((data, (rows, cols)), shape=(n, n))
+
+
+def reorder_by_mod(A):
+    n = A.shape[0]
+    perm = np.argsort(np.arange(n) % 32)
+    return A[perm, :][:, perm]
+
+
+def reorder_vertical_stripes(A):
+    col_deg = np.diff(A.tocsc().indptr)
+    perm = np.argsort(-col_deg)
+    return A[:, perm]
+
+
+def reorder_horizontal_stripes(A):
+    row_deg = np.diff(A.tocsr().indptr)
+    perm = np.argsort(-row_deg)
+    return A[perm, :]
 
 
 def load_synthetic_matrix(group, name) -> sparse.csr_matrix:
@@ -165,23 +182,8 @@ def plot_sparsity_patterns(mats, max_n =256, markersize = 2):
     plt.subplots_adjust(hspace=0.5, wspace=0.3)
     plt.show()
 
-def reorder_by_mod(A):
-    n = A.shape[0]
-    perm = np.argsort(np.arange(n) % 32)
-    return A[perm, :][:, perm]
-
-def reorder_vertical_stripes(A):
-    col_deg = np.diff(A.tocsc().indptr)
-    perm = np.argsort(-col_deg)
-    return A[:, perm]
-
-def reorder_horizontal_stripes(A):
-    row_deg = np.diff(A.tocsr().indptr)
-    perm = np.argsort(-row_deg)
-    return A[perm, :]
-
-A = horizontal_striped_matrix(256)
-A_reordered = reorder_horizontal_stripes(A).tocsr()
+# A = horizontal_striped_matrix(256)
+# A_reordered = reorder_horizontal_stripes(A).tocsr()
 
 # plt.figure(figsize=(10,4))
 
