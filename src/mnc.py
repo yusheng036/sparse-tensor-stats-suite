@@ -33,7 +33,7 @@ def mnc_stats(A: sparse.spmatrix) -> StatsMNC:
     )
 
 
-def MNC(A: sparse.spmatrix, B: sparse.spmatrix) -> float:
+def mnc(A: sparse.spmatrix, B: sparse.spmatrix) -> float:
     hA = mnc_stats(A)
     hB = mnc_stats(B)
     A_rows, A_cols = A.shape
