@@ -1,7 +1,4 @@
 import pytest
-import numpy as np
-import sparse
-from scipy import sparse as sp
 from src.hll import (
     hll_estimator_C_ik,
     hll_estimator_C_il,
