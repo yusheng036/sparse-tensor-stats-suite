@@ -128,21 +128,20 @@ def hll_estimator_C_ijm(A: sparse.COO, B: sparse.COO, error=0.05) -> float:
 def hll_estimator(
     A: sparse.COO,
     B: sparse.COO,
-    A_reduced: list[int],
-    B_reduced: list[int],
+    reduced: list[int],
     free_A: list[int],
     free_B: list[int],
     error: float = 0.05
 ) -> float:
     S = defaultdict(lambda: hyperloglog.HyperLogLog(error))
     for i in zip(*[A.coords[d] for d in range(A.ndim)]):
-        sketch = tuple(int(i[d]) for d in A_reduced)
+        sketch = tuple(int(i[d]) for d in reduced)
         free = tuple(int(i[d]) for d in free_A)
         S[sketch].add(str(free) if len(free) > 1 else int(free[0]))
 
     b_nnz = defaultdict(list)
     for j in zip(*[B.coords[d] for d in range(B.ndim)]):
-        sketch = tuple(int(j[d]) for d in B_reduced)
+        sketch = tuple(int(j[d]) for d in reduced)
         free = tuple(int(j[d]) for d in free_B)
         if sketch in S:
             b_nnz[free].append(sketch)
