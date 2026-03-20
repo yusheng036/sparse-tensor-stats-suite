@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Union
 
 import numpy as np
-from scipy import sparse
+from scipy import sparse as sp
+import sparse
 from scipy.io import mmread
 from urllib.parse import quote
 
@@ -46,19 +47,9 @@ def load_first_mtx_from_tar(tar_gz: Union[bytes, Path, str]) -> sparse.csr_matri
         A.data = np.ones_like(A.data, dtype=np.int8)
     return A
 
-def load_suitesparse_matrix(group: str, name: str) -> sparse.csr_matrix:
-    npz_cache = Path(".cache/npz")
-    npz_cache.mkdir(parents=True, exist_ok=True)
-    npz_path = npz_cache / f"{group}_{name}.npz"
-
-    if npz_path.exists():
-        return sparse.load_npz(npz_path).tocsr()
-
-    url = suitesparse_tar_url(group, name)
-    tar_path = download_cached(url)
-    A = load_first_mtx_from_tar(tar_path)
-    sparse.save_npz(npz_path, A)
-    return A
+def load_suitesparse_matrix(group, name):
+    npz_path = Path(f".cache/npz/{group}_{name}.npz")
+    return sp.load_npz(npz_path).tocsr()
 
 def ground_truth(A: sparse.spmatrix, B: sparse.spmatrix) -> int:
     A2, B2 = A.copy(), B.copy()
@@ -72,10 +63,44 @@ def ground_truth(A: sparse.spmatrix, B: sparse.spmatrix) -> int:
         C.eliminate_zeros()
     return C.nnz
 
-def rand_csr(m, n, density, seed) -> sparse.csr_matrix:
+def ground_truth_2d(A, B):
+    C = (A.astype(bool) @ B.astype(bool)).astype(bool)
+    return int(C.nnz)
+
+def rand_csr(m, n, density, seed) -> sp.csr_matrix:
     rng = np.random.default_rng(seed)
-    return sparse.random(
+    return sp.random(
         m, n, density=density, format="csr",
         random_state=rng,
         data_rvs=lambda k: np.ones(k, dtype=np.int8),
     )
+
+def rand_coo_2d(shape, density, seed=0):
+    rng = np.random.default_rng(seed)
+    total = int(np.prod(shape) * density)
+    coords = [rng.integers(0, s, total) for s in shape]
+    data = np.ones(total)
+    return sparse.COO(coords, data, shape=shape)
+
+def rand_coo_3d(shape, density, seed=0):
+    rng = np.random.default_rng(seed)
+    total = int(np.prod(shape) * density)
+    coords = [rng.integers(0, s, total) for s in shape]
+    data = np.ones(total)
+    return sparse.COO(coords, data, shape=shape)
+
+def ground_truth_coo(A, B, contraction):
+    A_dense = A.todense()
+    B_dense = B.todense()
+    C_dense = np.einsum(contraction, A_dense, B_dense).astype(bool)
+    return int(np.count_nonzero(C_dense))
+
+def assert_estimate(est, true_nnz, max_nnz, error):
+    assert est >= 0.0
+    assert est <= max_nnz * 1.5 + 1e-9
+    if true_nnz == 0:
+        assert est <= 1e-9
+    else:
+        rel_err = abs(est - true_nnz) / true_nnz
+        assert rel_err <= max(0.35, error * 10)
+

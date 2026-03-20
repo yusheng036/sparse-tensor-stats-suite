@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from src.mnc import MNC, mnc_stats
+from src.mnc import mnc, mnc_stats
 from src.suitesparse_util import rand_csr
 
 
@@ -11,7 +11,7 @@ def test_mnc_2d(I, J, K, density):
     A = rand_csr(I, J, density, seed=123)
     B = rand_csr(J, K, density, seed=456)
 
-    est = MNC(A, B)
+    est = mnc(A, B)
 
     assert est >= 0.0
     assert est <= (I * K) + 1e-9
