@@ -1,6 +1,6 @@
 # Sparse Tensor Stats Suite
 
-A research toolkit for estimating the number of nonzero entries (nnz) in the output of sparse matrix/tensor multiplications — without computing the product directly. It implements and compares several estimation algorithms against ground truth on both synthetic and real-world matrices from the SuiteSparse Matrix Collection.
+A research toolkit for estimating the number of nonzero entries (nnz) in the output of sparse matrix/tensor multiplications without producing the intermediates. It implements and compares several estimation algorithms against ground truth on both synthetic and real-world matrices from the SuiteSparse Matrix Collection.
 
 ## Algorithms
 
