@@ -34,13 +34,6 @@ tests/
   test_suitesparse.py
 ```
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-pip install hyperloglog sparse
-```
-
 ## Dependencies
 
 - `numpy`
