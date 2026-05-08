@@ -15,16 +15,16 @@ A research toolkit for estimating the number of nonzero entries (nnz) in the out
 
 ```
 src/
-  hll.py              # HyperLogLog-based nnz estimators
-  cohen.py            # Cohen min-hash estimator
-  lrb.py              # Localized Region Bound estimator
-  mnc.py              # MNC structural estimator
-  suitesparse_util.py # Downloading/loading SuiteSparse matrices
+  hll.py
+  cohen.py
+  lrb.py
+  mnc.py
+  suitesparse_util.py
 
 experiments/
-  matrix.py           # Synthetic sparse matrix generators and sparsity pattern plots
-  plot_hll.py         # HLL accuracy experiments
-  plot_lrb.py         # LRB accuracy experiments
+  matrix.py
+  plot_hll.py
+  plot_lrb.py
 
 tests/
   test_hll.py
